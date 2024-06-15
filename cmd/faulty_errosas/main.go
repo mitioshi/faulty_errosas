@@ -54,6 +54,18 @@ func pass(pass *analysis.Pass) (interface{}, error) {
 				pass.Report(analysis.Diagnostic{
 					Pos:     callExpr.Args[1].Pos(),
 					Message: fmt.Sprintf("this call to errors.As will panic. Consider prefixing %s with &", x.Name),
+					SuggestedFixes: []analysis.SuggestedFix{
+						{
+							Message: fmt.Sprintf("prefix %s with &", x.Name),
+							TextEdits: []analysis.TextEdit{
+								{
+									Pos:     x.Pos(),
+									End:     x.End(),
+									NewText: []byte("&" + x.Name),
+								},
+							},
+						},
+					},
 				})
 			}
 
